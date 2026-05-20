@@ -15,10 +15,12 @@ def reset_employee_department_state():
     app_module.next_employee_id = 1
 
 
-client = TestClient(app_module.app)
+@pytest.fixture
+def client():
+    return TestClient(app_module.app)
 
 
-def test_create_department_and_employee():
+def test_create_department_and_employee(client):
     create_department_response = client.post("/departments", json={"name": "Engineering"})
     assert create_department_response.status_code == 200
     assert create_department_response.json() == {"name": "Engineering"}
@@ -36,7 +38,7 @@ def test_create_department_and_employee():
     }
 
 
-def test_get_employee_and_department_salary_details():
+def test_get_employee_and_department_salary_details(client):
     client.post("/departments", json={"name": "Engineering"})
     client.post(
         "/employees",
@@ -68,7 +70,7 @@ def test_get_employee_and_department_salary_details():
     }
 
 
-def test_get_department_wise_employees():
+def test_get_department_wise_employees(client):
     client.post("/departments", json={"name": "HR"})
     client.post("/employees", json={"name": "Anu", "department": "HR", "salary": 40000})
     client.post("/employees", json={"name": "Ravi", "department": "HR", "salary": 45000})
